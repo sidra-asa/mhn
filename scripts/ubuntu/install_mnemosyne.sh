@@ -7,7 +7,7 @@ apt-get update
 apt-get install -y git python-pip python-dev
 pip install virtualenv
 
-SCRIPTS=`dirname $0`
+SCRIPTS=`pwd`
 bash $SCRIPTS/install_mongo.sh
 
 cd /opt/
@@ -18,9 +18,9 @@ virtualenv env
 pip install -r requirements.txt
 chmod 755 -R .
 
+source $SCRIPTS/hp_channels.sh
 IDENT=mnemosyne
 SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
-CHANNELS='amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarn.feeder,cuckoo.analysis,kippo.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events'
 
 cat > /opt/mnemosyne/mnemosyne.cfg <<EOF
 [webapi]
@@ -51,7 +51,7 @@ EOF
 
 deactivate
 . /opt/hpfeeds/env/bin/activate
-python /opt/hpfeeds/broker/add_user.py "$IDENT" "$SECRET" "" "$CHANNELS"
+python /opt/hpfeeds/broker/add_user.py "$IDENT" "$SECRET" "" "$mnemosyne_SUBSCRIBE"
 
 apt-get install -y supervisor
 

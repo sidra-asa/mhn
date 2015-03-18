@@ -1,12 +1,17 @@
 #!/bin/bash
 
 set -x
+set -e
 
 apt-get install -y git golang mercurial make coffeescript
 DEBIAN_FRONTEND=noninteractive apt-get install -y golang-go
 
+SCRIPTS=`pwd`
+source $SCRIPTS/hp_channels.sh
+
 SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
-/opt/hpfeeds/env/bin/python /opt/hpfeeds/broker/add_user.py honeymap $SECRET "" "geoloc.events"
+
+/opt/hpfeeds/env/bin/python /opt/hpfeeds/broker/add_user.py "honeymap" $SECRET "" "$honeymap_SUBSCRIBE"
 
 cd /opt
 git clone https://github.com/threatstream/honeymap.git
@@ -49,7 +54,7 @@ wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz && gz
 wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz && gzip -d GeoLiteCityv6.dat.gz
 
 SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
-/opt/hpfeeds/env/bin/python /opt/hpfeeds/broker/add_user.py geoloc $SECRET "geoloc.events" amun.events,dionaea.connections,dionaea.capture,glastopf.events,beeswarm.hive,kippo.sessions,conpot.events,snort.alerts,kippo.alerts,wordpot.events,shockpot.events,p0f.events,suricata.events
+/opt/hpfeeds/env/bin/python /opt/hpfeeds/broker/add_user.py "geoloc" $SECRET "$geoloc_PUBLISH" "$geoloc_SUBSCRIBE"
 
 cat > /opt/hpfeeds/geoloc.json <<EOF
 {
